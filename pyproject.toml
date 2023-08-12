@@ -11,6 +11,27 @@ python = "^3.10"
 pandas = "^2.0.3"
 
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.284"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 115
+show-source = true
+include = ["**/*.py", "**/*.pyi", "**/pyproject.toml", "*.ipynb"]
+select = [
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "UP",   # pyupgrade
+  "N",    # pep8-naming
+  "C90",  # mccabe
+  "I",    # isort
+  "PERF", # perflint
+  "NPY",  # numpy
+  "PL",   # pylint
+  "RUF",  # ruff
+]
