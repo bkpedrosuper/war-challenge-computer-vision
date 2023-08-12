@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "war-challenge-computer-vision"
+version = "0.1.0"
+description = ""
+authors = ["ArcelorMittal <pedroserpah@gmail.com>"]
+readme = "README.md"
+packages = [{include = "war_challenge_computer_vision"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
