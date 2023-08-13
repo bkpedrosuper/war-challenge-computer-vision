@@ -17,7 +17,6 @@ class Preprocessor:
     def otsu_threshold(self, threshold=0):
         image_array = np.array(self.processed_image)
         _, thresh = cv2.threshold(image_array, threshold, 255, cv2.THRESH_OTSU)
-
         self.processed_image = Image.fromarray(cv2.cvtColor(thresh, cv2.COLOR_BGR2RGB))
         return self
 
