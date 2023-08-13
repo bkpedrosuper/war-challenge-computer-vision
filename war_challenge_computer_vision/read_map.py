@@ -28,14 +28,14 @@ def get_colour_name(requested_colour: tuple[int, int, int]):
     return actual_name, closest_name
 
 
-for territory in coordinates.keys():
-    top_left = coordinates[territory]["coord1"]
-    bottom_right = coordinates[territory]["coord2"]
-    c1, c2 = coordinates[territory]["color"]
+for territory, coordinate in coordinates.items():
+    top_left = coordinate.top_left
+    bottom_right = coordinate.bottom_right
+    c1, c2 = coordinate.color_pixel
     color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))
 
     team_color, nearest_team_color = get_colour_name(color[:3])
-    print(f"Team Color {team_color} {nearest_team_color}")
+    print(f"{territory} Team Color {team_color} {nearest_team_color}")
 
     x1, y1 = top_left
     x2, y2 = bottom_right
