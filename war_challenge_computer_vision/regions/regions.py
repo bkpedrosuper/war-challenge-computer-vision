@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from enum import Enum
 
 
-@dataclass
 class ContinentData:
     idx = 0
 
@@ -20,7 +18,7 @@ class Continent(Enum):
     OCEANIA = ContinentData(2)
     SA = ContinentData(2)
 
-@dataclass()
+
 class RegionData:
     idx = 0
 
