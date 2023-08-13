@@ -20,7 +20,7 @@ class Continents(Enum):
     OCEANIA = ContinentData(2)
     SA = ContinentData(2)
 
-
+@dataclass()
 class RegionData:
     idx = 0
 
