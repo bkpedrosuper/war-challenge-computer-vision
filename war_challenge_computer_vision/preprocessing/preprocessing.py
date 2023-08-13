@@ -5,6 +5,7 @@ from PIL.Image import Image as ImagePIL
 from skimage.morphology import binary_dilation, binary_erosion
 
 
+# https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html
 class Preprocessor:
     def __init__(self, image: ImagePIL):
         self.image = image
