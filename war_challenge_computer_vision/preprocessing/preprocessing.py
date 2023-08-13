@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 from PIL import Image, ImageOps
 from PIL.Image import Image as ImagePIL
@@ -15,10 +14,10 @@ class Preprocessor:
         self.processed_image = ImageOps.invert(self.processed_image)
         return self
 
-    def otsu_threshold(self, threshold=0):
-        image_array = np.array(self.processed_image)
-        _, thresh = cv2.threshold(image_array, threshold, 255, cv2.THRESH_OTSU)
-        self.processed_image = Image.fromarray(cv2.cvtColor(thresh, cv2.COLOR_BGR2RGB))
+    def otsu_threshold(self, threshold=170):
+        self.processed_image = self.processed_image.point(
+            lambda gray_point: 255 if gray_point > threshold else 0
+        )
         return self
 
     def erode_image(self, qtd_erosion=14):
@@ -43,7 +42,7 @@ class Preprocessor:
 
     def resize(self, size: tuple[int, int] = (500, 500)):
         self.processed_image = self.processed_image.resize(
-            size, resample=Image.Resampling.LANCZOS
+            size, resample=Image.Resampling.BICUBIC
         )
         return self
 
