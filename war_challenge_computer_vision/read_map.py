@@ -1,65 +1,71 @@
-import cv2
-import numpy as np
 import pytesseract
-from PIL import Image, ImageOps
+import webcolors
+from PIL import Image
 
 from war_challenge_computer_vision.coordinates import coordinates
+from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 
 image = Image.open("images/TelaDoJogo.png")
 
 
-def otsu_threshold(image, threshold):
-    # Convert the PIL image to a NumPy array
-    image_array = np.array(image)
-    # opencv_image = cv2.cvtColor(image_array, cv2.GRAY)
-    ret1, thresh = cv2.threshold(
-        image_array, threshold, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
-    )
+def closest_colour(requested_colour: tuple[int, int, int]):
+    min_colours: dict[int, str] = {}
+    for key, name in webcolors.CSS3_HEX_TO_NAMES.items():
+        r_c, g_c, b_c = webcolors.hex_to_rgb(key)
+        rd = (r_c - requested_colour[0]) ** 2
+        gd = (g_c - requested_colour[1]) ** 2
+        bd = (b_c - requested_colour[2]) ** 2
+        min_colours[(rd + gd + bd)] = name
+    return min_colours[min(min_colours.keys())]
 
-    return Image.fromarray(cv2.cvtColor(thresh, cv2.COLOR_BGR2RGB))
+
+def get_colour_name(requested_colour: tuple[int, int, int]):
+    try:
+        closest_name = actual_name = webcolors.rgb_to_name(requested_colour)
+    except ValueError:
+        closest_name = closest_colour(requested_colour)
+        actual_name = None
+    return actual_name, closest_name
 
 
-# Convert BGR to RGB (OpenCV loads images in BGR format)
-# image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+for territory, coordinate in coordinates.items():
+    top_left = coordinate.top_left
+    bottom_right = coordinate.bottom_right
+    c1, c2 = coordinate.color_pixel
+    color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))
 
-for territory in coordinates.keys():
-    top_left = coordinates[territory]["coord1"]
-    bottom_right = coordinates[territory]["coord2"]
-    c1, c2 = coordinates[territory]["color"]
-    color = list(image.getpixel((c1, c2)))
-
-    print(color)
+    team_color, nearest_team_color = get_colour_name(color[:3])
+    print(f"{territory} Team Color {team_color} {nearest_team_color}")
 
     x1, y1 = top_left
     x2, y2 = bottom_right
 
     slice_image = image.crop((x1, y1, x2, y2))
-    gray_image = slice_image.convert("L")
-    threshold = 140
-    threshold_image = otsu_threshold(gray_image, threshold)
-    image_contrast = ImageOps.autocontrast(
-        gray_image.point(lambda gray_pixel: 255 - gray_pixel)
-    ).resize((500, 500), resample=Image.BOX)
 
-    high_resolution_threshold_image = threshold_image.resize(
-        (500, 500), resample=Image.BOX
+    preprocessor = Preprocessor(slice_image)
+
+    processed_image = (
+        preprocessor.convert_to_gray()
+        .resize()
+        .otsu_threshold(150)
+        .dilate_image(5)
+        .erode_image(5)
+        .dilate_image(5)
+        .erode_image(5)
+        .dilate_image(5)
+        .erode_image(15)
+        .dilate_image(2)
+        .invert_image()
+        .build()
     )
 
-    # pil_image = Image.fromarray(cv2.cvtColor(slice_image, cv2.COLOR_BGR2GRAY))
-    # pil_image = Image.open("images/definicao-de-texto.png")
-
     troops_in_territory = pytesseract.image_to_string(
-        high_resolution_threshold_image, lang="eng", config="--psm 6 outputbase digits"
+        processed_image,
+        lang="eng",
+        config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
     )
 
     print(f"There is {str(troops_in_territory).strip()} in {territory}")
-    # print(image.size)
 
-    # Display the image
-    # cv2.imwrite('images/Square_slice.png', slice_image)
-    high_resolution_threshold_image.save(f"images/{territory}_slice_threshold.png")
-    image_contrast.save(f"images/{territory}_contrast.png")
+    processed_image.save(f"images/{territory}_slice_threshold.png")
     slice_image.save(f"images/{territory}_slice.png")
-    # cv2.imwrite('images/Square_rect.png', image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
