@@ -32,8 +32,8 @@ image = image.resize((1920, 1080))
 
 for territory, coordinate in coordinates.items():
     top_left = coordinate.top_left
-    bottom_right = (top_left[0]+32, top_left[1]+32)
-    c1, c2 = (top_left[0]+16, top_left[1]+2)
+    bottom_right = (top_left[0] + 32, top_left[1] + 32)
+    c1, c2 = (top_left[0] + 16, top_left[1] + 2)
 
     color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))
 

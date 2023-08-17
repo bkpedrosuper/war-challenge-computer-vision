@@ -32,6 +32,7 @@ class Preprocessor:
     def erode_image(self, qtd_erosion=14):
         binary_image = self.processed_image.convert("1")
         eroded_image = binary_erosion(np.array(binary_image))
+        # TODO (Any): Remove for
         for _ in range(qtd_erosion - 1):
             eroded_image = binary_erosion(eroded_image)
         self.processed_image = Image.fromarray(eroded_image.astype(np.uint8) * 255)
@@ -40,6 +41,7 @@ class Preprocessor:
     def dilate_image(self, qtd_dilation=5):
         binary_image = self.processed_image.convert("1")
         eroded_image = binary_dilation(np.array(binary_image))
+        # TODO (Any): Remove for
         for _ in range(qtd_dilation - 1):
             eroded_image = binary_dilation(eroded_image)
         self.processed_image = Image.fromarray(eroded_image.astype(np.uint8) * 255)
