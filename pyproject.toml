@@ -41,3 +41,8 @@ select = [
   "PL",   # pylint
   "RUF",  # ruff
 ]
+
+[tool.taskipy.tasks]
+lint = "ruff . --fix"
+dev = "ENVIROMENT=dev python war_challenge_computer_vision/main.py"
+prod = "ENVIROMENT=prod python war_challenge_computer_vision/main.py"
