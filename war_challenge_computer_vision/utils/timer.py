@@ -1,11 +1,11 @@
 import time
 
-from war_challenge_computer_vision.utils.enviroment import is_dev
+from war_challenge_computer_vision.utils.enviroment import is_prod
 
 
 # https://www.tutorialspoint.com/concurrency_in_python/concurrency_in_python_benchmarking_and_profiling.htm
 def timer_func(func):
-    if not is_dev:
+    if is_prod:
         return func
 
     def function_timer(*args, **kwargs):
