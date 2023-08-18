@@ -1,7 +1,8 @@
 import numpy as np
 from PIL import Image, ImageOps
 from PIL.Image import Image as ImagePIL
-from skimage.morphology import binary_dilation, binary_erosion
+from skimage.filters import rank
+from skimage.morphology import binary_dilation, binary_erosion, disk
 
 
 # https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html
@@ -11,10 +12,18 @@ class Preprocessor:
         self.processed_image = self.image
 
     def invert_image(self):
-        self.processed_image = ImageOps.invert(self.processed_image)
+        self.processed_image = ImageOps.invert(image=self.processed_image)
         return self
 
-    def otsu_threshold(self, threshold=170):
+    def filter_mean(self, kernel_size=15):
+        footprint = disk(kernel_size)
+        filtered_image = rank.mean_percentile(
+            image=np.array(self.processed_image), footprint=footprint
+        )
+        self.processed_image = Image.fromarray(filtered_image)
+        return self
+
+    def threshold(self, threshold=170):
         self.processed_image = self.processed_image.point(
             lambda gray_point: 255 if gray_point > threshold else 0
         )
@@ -23,6 +32,7 @@ class Preprocessor:
     def erode_image(self, qtd_erosion=14):
         binary_image = self.processed_image.convert("1")
         eroded_image = binary_erosion(np.array(binary_image))
+        # TODO (Any): Remove for
         for _ in range(qtd_erosion - 1):
             eroded_image = binary_erosion(eroded_image)
         self.processed_image = Image.fromarray(eroded_image.astype(np.uint8) * 255)
@@ -31,6 +41,7 @@ class Preprocessor:
     def dilate_image(self, qtd_dilation=5):
         binary_image = self.processed_image.convert("1")
         eroded_image = binary_dilation(np.array(binary_image))
+        # TODO (Any): Remove for
         for _ in range(qtd_dilation - 1):
             eroded_image = binary_dilation(eroded_image)
         self.processed_image = Image.fromarray(eroded_image.astype(np.uint8) * 255)

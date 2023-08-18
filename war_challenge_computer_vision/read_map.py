@@ -5,7 +5,7 @@ from PIL import Image
 from war_challenge_computer_vision.coordinates import coordinates
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 
-image = Image.open("images/TelaDoJogo.png")
+image = Image.open("images/TelaJogo.png")
 
 
 def closest_colour(requested_colour: tuple[int, int, int]):
@@ -28,10 +28,13 @@ def get_colour_name(requested_colour: tuple[int, int, int]):
     return actual_name, closest_name
 
 
+image = image.resize((1920, 1080))
+
 for territory, coordinate in coordinates.items():
     top_left = coordinate.top_left
-    bottom_right = coordinate.bottom_right
-    c1, c2 = coordinate.color_pixel
+    bottom_right = (top_left[0] + 32, top_left[1] + 32)
+    c1, c2 = (top_left[0] + 16, top_left[1] + 2)
+
     color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))
 
     team_color, nearest_team_color = get_colour_name(color[:3])
@@ -47,14 +50,9 @@ for territory, coordinate in coordinates.items():
     processed_image = (
         preprocessor.convert_to_gray()
         .resize()
-        .otsu_threshold(150)
+        .threshold(150)
         .dilate_image(5)
-        .erode_image(5)
-        .dilate_image(5)
-        .erode_image(5)
-        .dilate_image(5)
-        .erode_image(15)
-        .dilate_image(2)
+        .erode_image(10)
         .invert_image()
         .build()
     )
