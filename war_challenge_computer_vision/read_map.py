@@ -5,6 +5,7 @@ from PIL.Image import Image as ImagePIL
 from war_challenge_computer_vision.coordinates import Coordinate
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 from war_challenge_computer_vision.regions.regions import Region
+from war_challenge_computer_vision.utils.timer import timer_func
 
 
 def closest_colour(requested_colour: tuple[int, int, int]):
@@ -26,7 +27,7 @@ def get_colour_name(requested_colour: tuple[int, int, int]):
         actual_name = None
     return actual_name, closest_name
 
-
+@timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + 32, top_left[1] + 32)
