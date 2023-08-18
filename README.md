@@ -19,6 +19,6 @@ sudo apt install libtesseract-dev
 
 ## Performance
 ```bash
-time task dev
-task dev  184,16s user 3,43s system 1448% cpu 12,951 total
+time task prod
+task prod  165,96s user 3,37s system 1467% cpu 11,542 total
 ```
