@@ -1,11 +1,11 @@
 import pytesseract
 import webcolors
-from PIL import Image
+from PIL.Image import Image as ImagePIL
 
-from war_challenge_computer_vision.coordinates import coordinates
+from war_challenge_computer_vision.coordinates import Coordinate
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
-
-image = Image.open("images/TelaJogo.png")
+from war_challenge_computer_vision.regions.regions import Region
+from war_challenge_computer_vision.utils.timer import timer_func
 
 
 def closest_colour(requested_colour: tuple[int, int, int]):
@@ -27,10 +27,8 @@ def get_colour_name(requested_colour: tuple[int, int, int]):
         actual_name = None
     return actual_name, closest_name
 
-
-image = image.resize((1920, 1080))
-
-for territory, coordinate in coordinates.items():
+@timer_func
+def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + 32, top_left[1] + 32)
     c1, c2 = (top_left[0] + 16, top_left[1] + 2)
@@ -38,7 +36,7 @@ for territory, coordinate in coordinates.items():
     color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))
 
     team_color, nearest_team_color = get_colour_name(color[:3])
-    print(f"{territory} Team Color {team_color} {nearest_team_color}")
+    # print(f"{territory} Team Color {team_color} {nearest_team_color}")
 
     x1, y1 = top_left
     x2, y2 = bottom_right
@@ -63,7 +61,9 @@ for territory, coordinate in coordinates.items():
         config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
     )
 
-    print(f"There is {str(troops_in_territory).strip()} in {territory}")
+    # print(f"There is {str(troops_in_territory).strip()} in {territory}")
 
-    processed_image.save(f"images/{territory}_slice_threshold.png")
-    slice_image.save(f"images/{territory}_slice.png")
+    # processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
+    # slice_image.save(f"images/map_slices/{territory}_slice.png")
+
+    return (territory, int(troops_in_territory), nearest_team_color)

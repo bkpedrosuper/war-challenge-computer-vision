@@ -14,10 +14,13 @@ pytesseract = "^0.3.10"
 pillow = "^10.0.0"
 webcolors = "^1.13"
 scikit-image = "^0.21.0"
+python-dotenv = {extras = ["cli"], version = "^1.0.0"}
 
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.284"
+taskipy = "^1.12.0"
+viztracer = "^0.15.6"
 
 [build-system]
 requires = ["poetry-core"]
@@ -40,3 +43,9 @@ select = [
   "PL",   # pylint
   "RUF",  # ruff
 ]
+
+[tool.taskipy.tasks]
+lint = "ruff . --fix"
+dev = "dotenv -f .shared.env run -- python war_challenge_computer_vision/main.py"
+prod = "dotenv -f .prod.shared.env run -- python war_challenge_computer_vision/main.py"
+profile = "dotenv -f .prod.shared.env run -- viztracer -o data/benchmarks/result.html war_challenge_computer_vision/main.py"

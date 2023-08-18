@@ -90,6 +90,12 @@ class Region(Enum):
     def idx(self):
         return self.value.idx
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return str(self)
+
 
 Region.Brazil.set_borders(
     [
@@ -413,29 +419,18 @@ Region.Australia.set_borders(
 )
 
 
-# with Pool() as process_pool:
-#     border_matriz = np.array(
-#         process_pool.map(
-#             lambda country1: np.array(
-#                 process_pool.map(
-#                     lambda country2: country1 in country2.value.borders, Region
-#                 )
-#             ),
-#             Region,
-#         )
-#     )
-
-border_matriz_dumb = np.array(
-    [
+def gen_border_matrix():
+    border_matriz = np.array(
         [
-            True if country1 in country2.value.borders else False
-            for country2 in Region
-            if country2 != country1
+            [
+                True if country1 in country2.value.borders else False
+                for country2 in Region
+                if country2 != country1
+            ]
+            for country1 in Region
         ]
-        for country1 in Region
-    ]
-)
+    )
+    return border_matriz
+
 
 # print(np.testing.assert_array_almost_equal(border_matriz, border_matriz_dumb))
-
-print(border_matriz_dumb)

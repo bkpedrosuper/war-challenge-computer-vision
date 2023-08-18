@@ -13,7 +13,7 @@ class Coordinate:
     color_pixel: tuple[int, int]
 
 
-coordinates: dict[Region, Coordinate] = {
+coordinates_dict: dict[Region, Coordinate] = {
     Region.Brazil: Coordinate(
         top_left=(611, 593), bottom_right=(643, 625), color_pixel=(627, 595)
     ),
@@ -141,3 +141,7 @@ coordinates: dict[Region, Coordinate] = {
         top_left=(1414, 714), bottom_right=(866, 448), color_pixel=(856, 430)
     ),
 }
+
+coordinates = (
+    (territory, coordinate) for (territory, coordinate) in coordinates_dict.items()
+)
