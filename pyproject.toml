@@ -45,5 +45,5 @@ select = [
 
 [tool.taskipy.tasks]
 lint = "ruff . --fix"
-dev = "ENVIRONMENT=dev python war_challenge_computer_vision/main.py"
-prod = "ENVIRONMENT=prod python war_challenge_computer_vision/main.py"
+dev = "dotenv run -- python war_challenge_computer_vision/main.py"
+prod = "dotenv run -- python war_challenge_computer_vision/main.py"
