@@ -14,6 +14,7 @@ pytesseract = "^0.3.10"
 pillow = "^10.0.0"
 webcolors = "^1.13"
 scikit-image = "^0.21.0"
+python-dotenv = {extras = ["cli"], version = "^1.0.0"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -44,5 +45,5 @@ select = [
 
 [tool.taskipy.tasks]
 lint = "ruff . --fix"
-dev = "ENVIROMENT=dev python war_challenge_computer_vision/main.py"
-prod = "ENVIROMENT=prod python war_challenge_computer_vision/main.py"
+dev = "ENVIRONMENT=dev python war_challenge_computer_vision/main.py"
+prod = "ENVIRONMENT=prod python war_challenge_computer_vision/main.py"
