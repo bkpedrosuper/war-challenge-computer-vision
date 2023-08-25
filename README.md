@@ -22,3 +22,9 @@ sudo apt install libtesseract-dev
 time task prod
 task prod  165,96s user 3,37s system 1467% cpu 11,542 total
 ```
+
+## Branch issues?
+Before coding, always checkout to the main branch:
+```bash
+git checkout main
+```
