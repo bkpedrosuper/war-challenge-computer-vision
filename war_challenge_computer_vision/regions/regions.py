@@ -20,6 +20,14 @@ class Continent(Enum):
     OCEANIA = ContinentData(2)
     SA = ContinentData(2)
 
+    @property
+    def idx(self):
+        return self.value.idx
+
+    @property
+    def qtd_troops(self):
+        return self.value.qtd_troops
+
 
 class RegionData:
     idx = 0
@@ -85,10 +93,21 @@ class Region(Enum):
 
     def set_borders(self, borders: list["Region"]):
         self.value.set_borders(borders)
+        self.foreigner_borders = len(
+            set(
+                filter(
+                    lambda border: border.continent.idx != self.continent.idx, borders
+                )
+            )
+        )
 
     @property
     def idx(self):
         return self.value.idx
+
+    @property
+    def continent(self):
+        return self.value.continent
 
     def __str__(self):
         return self.name
