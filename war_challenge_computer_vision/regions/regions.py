@@ -7,9 +7,9 @@ class ContinentData:
     idx = 0
 
     def __init__(self, qtd_troops: int):
-        ContinentData.idx += 1
         self.qtd_troops = qtd_troops
         self.idx = ContinentData.idx
+        ContinentData.idx += 1
 
 
 class Continent(Enum):
@@ -25,10 +25,10 @@ class RegionData:
     idx = 0
 
     def __init__(self, continent: Continent):
-        RegionData.idx += 1
         self.continent = continent
         self.idx = RegionData.idx
         self.borders: list[Region] = []
+        RegionData.idx += 1
 
     def set_borders(self, borders: list["Region"]):
         self.borders = borders
