@@ -21,8 +21,11 @@ def mapper_process_territory(data: tuple[Region, Coordinate]):
     coordinate = data[1]
     return process_territory(image, territory, coordinate)
 
+
 def mapper_game_step():
-    return get_game_step(image)
+    game_step = get_game_step(image)
+    return game_step, game_step.troops_to_alloc
+
 
 def get_data():
     cpu_counts = cpu_count()
@@ -33,7 +36,8 @@ def get_data():
             coordinates,
         )
         border_matrix = pool.apply(gen_border_matrix)
-        game_step = pool.apply(mapper_game_step)
+        game_step, troops_to_alloc = pool.apply(mapper_game_step)
+        game_step.set_troops_to_alloc(troops_to_alloc)
     return map_state, border_matrix, game_step, "darkslategray"
 
 

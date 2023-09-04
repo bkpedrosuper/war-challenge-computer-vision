@@ -75,15 +75,14 @@ def get_troops_to_alloc(image: ImagePIL) -> int:
     possible_alloc_troops = pytesseract.image_to_string(
         processed_image,
         lang="por",
-        config="--psm 7 --oem 3",
+        config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
     )
-    # print(unidecode(game_step))
     if is_dev:
         slice_image.save("images/map_slices/game_alloc_troops_slice.png")
         processed_image.save("images/map_slices/game_alloc_troops_threshold.png")
     try:
         return int(possible_alloc_troops)
-    finally:
+    except ValueError:
         return 0
 
 
