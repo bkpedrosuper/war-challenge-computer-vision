@@ -12,15 +12,30 @@ from war_challenge_computer_vision.utils.enviroment import is_dev
 from war_challenge_computer_vision.utils.timer import timer_func
 
 
+class GameStepData:
+    def __init__(self, desc_word: str, troops_to_alloc: int | None = None) -> None:
+        self.desc_word = desc_word
+        self.troops_to_alloc = troops_to_alloc
+
+
 class GameStep(Enum):
-    ALOCACAO = "Fortificar"
-    ATAQUE = "Atacar"
-    MOVIMENTACAO = "Deslocar"
+    ALOCACAO = GameStepData("Fortificar")
+    ATAQUE = GameStepData("Atacar")
+    MOVIMENTACAO = GameStepData("Deslocar")
 
     @property
     def desc_word(self):
-        return self.value
-    
+        return self.value.desc_word
+
+    @property
+    def troops_to_alloc(self):
+        return self.value.troops_to_alloc
+
+    def set_troops_to_alloc(self, troops_to_alloc: int):
+        if self != GameStep.ALOCACAO:
+            return
+        self.value.troops_to_alloc = troops_to_alloc
+
     @property
     def desc_word_norm(self):
         return unidecode(self.desc_word).lower()
@@ -38,6 +53,38 @@ class GameStep(Enum):
 
     def __repr__(self) -> str:
         return str(self)
+
+
+@timer_func
+def get_troops_to_alloc(image: ImagePIL) -> int:
+    # 1229, 946
+    # 1249, 972
+    x1, y1 = 1230, 945
+    x2, y2 = (x1 + 20, y1 + 28)
+    slice_image = image.crop((x1, y1, x2, y2))
+    preprocessor = Preprocessor(slice_image)
+    processed_image = (
+        preprocessor.convert_to_gray()
+        .resize()
+        .threshold(140)
+        .dilate_image(5)
+        .erode_image(10)
+        .invert_image()
+        .build()
+    )
+    possible_alloc_troops = pytesseract.image_to_string(
+        processed_image,
+        lang="por",
+        config="--psm 7 --oem 3",
+    )
+    # print(unidecode(game_step))
+    if is_dev:
+        slice_image.save("images/map_slices/game_alloc_troops_slice.png")
+        processed_image.save("images/map_slices/game_alloc_troops_threshold.png")
+    try:
+        return int(possible_alloc_troops)
+    finally:
+        return 0
 
 
 @timer_func
@@ -65,7 +112,11 @@ def get_game_step(image: ImagePIL) -> GameStep:
     # print(unidecode(game_step))
     if is_dev:
         processed_image.save("images/map_slices/game_step_slice.png")
-    return GameStep.get_game_step(possible_game_step)
+    game_step = GameStep.get_game_step(possible_game_step)
+    if game_step == GameStep.ALOCACAO:
+        troops_to_alloc = get_troops_to_alloc(image)
+        game_step.set_troops_to_alloc(troops_to_alloc)
+    return game_step
 
 
 @timer_func
