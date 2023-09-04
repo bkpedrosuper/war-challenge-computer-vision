@@ -1,5 +1,6 @@
 import webcolors
 
+
 def closest_colour(requested_colour: tuple[int, int, int]):
     min_colours: dict[int, str] = {}
     for key, name in webcolors.CSS3_HEX_TO_NAMES.items():
