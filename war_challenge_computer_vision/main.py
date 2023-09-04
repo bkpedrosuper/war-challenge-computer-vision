@@ -9,7 +9,7 @@ from war_challenge_computer_vision.coordinates import (
     coordinates,
     original_res,
 )
-from war_challenge_computer_vision.read_map import process_territory
+from war_challenge_computer_vision.read_map import get_game_step, process_territory
 from war_challenge_computer_vision.regions.regions import Region, gen_border_matrix
 
 image = Image.open(Path(__file__).parent.parent / "images/TelaJogo2.png")
@@ -21,15 +21,20 @@ def mapper_process_territory(data: tuple[Region, Coordinate]):
     coordinate = data[1]
     return process_territory(image, territory, coordinate)
 
+def mapper_game_step():
+    return get_game_step(image)
 
 def get_data():
-    with Pool(max(cpu_count() - 2, 1)) as pool:
+    cpu_counts = cpu_count()
+    cpu_counts = cpu_counts if cpu_counts else 0
+    with Pool(max(cpu_counts - 2, 1)) as pool:
         map_state = pool.map(
             mapper_process_territory,
             coordinates,
         )
         border_matrix = pool.apply(gen_border_matrix)
-    return map_state, border_matrix
+        game_step = pool.apply(mapper_game_step)
+    return map_state, border_matrix, game_step, "darkslategray"
 
 
 if __name__ == "__main__":
