@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 from PIL import Image, ImageOps
 from PIL.Image import Image as ImagePIL
@@ -15,12 +16,22 @@ class Preprocessor:
         self.processed_image = ImageOps.invert(image=self.processed_image)
         return self
 
+    def crop(self, coords: tuple[int, int, int, int] = (90, 65, 410, 410)):
+        self.processed_image = self.processed_image.crop(coords)
+        return self
+
     def filter_mean(self, kernel_size=15):
         footprint = disk(kernel_size)
         filtered_image = rank.mean_percentile(
             image=np.array(self.processed_image), footprint=footprint
         )
         self.processed_image = Image.fromarray(filtered_image)
+        return self
+
+    def add_border(self, border=10, fill="white"):
+        self.processed_image = ImageOps.expand(
+            self.processed_image, border=border, fill=fill
+        )
         return self
 
     def threshold(self, threshold=170):
@@ -45,6 +56,31 @@ class Preprocessor:
         for _ in range(qtd_dilation - 1):
             eroded_image = binary_dilation(eroded_image)
         self.processed_image = Image.fromarray(eroded_image.astype(np.uint8) * 255)
+        return self
+
+    def center_number(self):
+        binary_image = self.processed_image.convert("1")
+        # get shape
+        image_array = np.array(binary_image).astype(np.uint8)
+        hh, ww = image_array.shape
+
+        # get contours (presumably just one around the nonzero pixels)
+        contours = cv2.findContours(
+            image_array, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
+        contours = contours[0] if len(contours) == 2 else contours[1]  # noqa: PLR2004
+        x, y, w, h = 0, 0, 0, 0
+        for cntr in contours:
+            x, y, w, h = cv2.boundingRect(cntr)
+
+        # recenter
+        startx = (ww - w) // 2
+        starty = (hh - h) // 2
+        result = np.zeros_like(image_array)
+        result[starty : starty + h, startx : startx + w] = image_array[
+            y : y + h, x : x + w
+        ]
+        self.processed_image = Image.fromarray(result.astype(np.uint8) * 255)
         return self
 
     def convert_to_gray(self):

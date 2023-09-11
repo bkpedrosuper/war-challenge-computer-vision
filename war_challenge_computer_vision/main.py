@@ -12,7 +12,7 @@ from war_challenge_computer_vision.coordinates import (
 from war_challenge_computer_vision.read_map import get_game_step, process_territory
 from war_challenge_computer_vision.regions.regions import Region, gen_border_matrix
 
-image = Image.open(Path(__file__).parent.parent / "images/TelaJogo.png")
+image = Image.open(Path(__file__).parent.parent / "images/TelaJogo5.png")
 image = image.resize(original_res)
 
 

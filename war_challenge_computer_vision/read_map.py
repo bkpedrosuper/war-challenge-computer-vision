@@ -1,6 +1,7 @@
 from enum import Enum
 
 import pytesseract
+from PIL import Image, ImageOps
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
@@ -138,23 +139,35 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
 
     processed_image = (
         preprocessor.convert_to_gray()
-        .resize()
+        .resize((1000,1000))
         .threshold(185)
-        .dilate_image(5)
-        .erode_image(10)
+        .center_number()
+        # .crop()
+        # .resize((1000,1000))
+        # .filter_mean(10)
+        # .threshold(170)
+        .dilate_image(10)
+        .erode_image(20)
+        # .add_border()
         .invert_image()
         .build()
     )
 
-    troops_in_territory = pytesseract.image_to_string(
+    # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
+
+    troops_in_territory = str(pytesseract.image_to_string(
         processed_image,
         lang="eng",
         config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
-    )
+    ))
 
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
         slice_image.save(f"images/map_slices/{territory}_slice.png")
-
-    return (territory, int(troops_in_territory), nearest_team_color)
+    try:
+        troops_in_territory = int(troops_in_territory)
+    except ValueError:
+        print(f"Error {troops_in_territory} {territory}")
+        troops_in_territory = 1
+    return (territory, troops_in_territory, nearest_team_color)
