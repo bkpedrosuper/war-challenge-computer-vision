@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image, ImageFilter, ImageOps
 from PIL.Image import Image as ImagePIL
-from skimage.filters import rank
-from skimage.morphology import binary_dilation, binary_erosion, disk
+from skimage.morphology import binary_dilation, binary_erosion
 
 
 # https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html
@@ -20,12 +19,8 @@ class Preprocessor:
         self.processed_image = self.processed_image.crop(coords)
         return self
 
-    def filter_mean(self, kernel_size=15):
-        footprint = disk(kernel_size)
-        filtered_image = rank.mean_percentile(
-            image=np.array(self.processed_image), footprint=footprint
-        )
-        self.processed_image = Image.fromarray(filtered_image)
+    def filter_mean(self):
+        self.processed_image = self.processed_image.filter(ImageFilter.BLUR)
         return self
 
     def add_border(self, border=10, fill="white"):
@@ -92,6 +87,11 @@ class Preprocessor:
             size, resample=Image.Resampling.BICUBIC
         )
         return self
+
+    def get_mean_color(self):
+        image_array = np.array(self.processed_image).reshape(250000, 4)
+        print("b", image_array.shape)
+        return np.mean(image_array, axis=0)
 
     def build(self):
         return self.processed_image

@@ -1,7 +1,7 @@
+from collections import Counter
 from enum import Enum
 
 import pytesseract
-from PIL import Image, ImageOps
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
@@ -119,52 +119,84 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
+possible_colors = (
+    "lightseagreen",
+    "olivedrab",
+    "firebrick",
+    "darkslateblue",
+    "goldenrod",
+    "darkslategray",
+)
+
+
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + 32, top_left[1] + 32)
     c1, c2 = (top_left[0] + 16, top_left[1] + 2)
-
-    color: tuple[int, int, int, int] = tuple(image.getpixel((c1, c2)))  # type: ignore
-
-    _, nearest_team_color = get_colour_name(color[:3])
-    # print(f"{territory} Team Color {team_color} {nearest_team_color}")
+    counter = 0
+    while True:
+        color = tuple(image.getpixel((c1, c2)))  # type: ignore
+        _, nearest_team_color = get_colour_name(tuple(color[:3]))  # type: ignore
+        if nearest_team_color in possible_colors or counter > 30:
+            break
+        c2 += 1
+        counter += 1
 
     x1, y1 = top_left
     x2, y2 = bottom_right
 
     slice_image = image.crop((x1, y1, x2, y2))
+    # preprocessor_color = Preprocessor(slice_image.crop((0, 14, 32, 24)))
+    # processed_image_color = preprocessor_color.resize((500, 500)).filter_mean().build()
+    # color: tuple[int, int, int, int] = tuple(
+    #     Counter(list(processed_image_color.getdata())).most_common(1)[0][0]
+    # )  # type: ignore
+    # print(territory, color)
 
     preprocessor = Preprocessor(slice_image)
-
-    processed_image = (
-        preprocessor.convert_to_gray()
-        .resize((1000,1000))
-        .threshold(185)
-        .center_number()
-        # .crop()
-        # .resize((1000,1000))
-        # .filter_mean(10)
-        # .threshold(170)
-        .dilate_image(10)
-        .erode_image(20)
-        # .add_border()
-        .invert_image()
-        .build()
-    )
+    if nearest_team_color not in "goldenrod":
+        processed_image = (
+            preprocessor.convert_to_gray()
+            .resize((1000, 1000))
+            .threshold(140)
+            .center_number()
+            # .crop()
+            # .resize((1000,1000))
+            # .filter_mean(10)
+            # .threshold(170)
+            .dilate_image(10)
+            .erode_image(20)
+            # .add_border()
+            .invert_image()
+            .build()
+        )
+    else:
+        processed_image = (
+            preprocessor.convert_to_gray()
+            .resize((1500, 1500))
+            .threshold(190)
+            .dilate_image(10)
+            .erode_image(20)
+            .invert_image()
+            .build()
+        )
 
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
-    troops_in_territory = str(pytesseract.image_to_string(
-        processed_image,
-        lang="eng",
-        config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
-    ))
+    troops_in_territory = str(
+        pytesseract.image_to_string(
+            processed_image,
+            lang="eng",
+            config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
+        )
+    )
 
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
         slice_image.save(f"images/map_slices/{territory}_slice.png")
+        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     try:
         troops_in_territory = int(troops_in_territory)
     except ValueError:
