@@ -184,22 +184,28 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
 
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
-    troops_in_territory = str(
-        pytesseract.image_to_string(
-            processed_image,
-            lang="eng",
-            config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
+    counter = 0
+    max_counter = 50
+    troops_in_territory = 1
+    while counter < max_counter:
+        troops_in_territory = str(
+            pytesseract.image_to_string(
+                processed_image,
+                lang="eng",
+                config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
+            )
         )
-    )
+        counter += 1
+        try:
+            troops_in_territory = int(troops_in_territory)
+            break
+        except ValueError:
+            troops_in_territory = 1
+        processed_image = Preprocessor(processed_image).erode_image(5).build()
 
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
         slice_image.save(f"images/map_slices/{territory}_slice.png")
         # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
-    try:
-        troops_in_territory = int(troops_in_territory)
-    except ValueError:
-        print(f"Error {troops_in_territory} {territory}")
-        troops_in_territory = 1
-    return (territory, troops_in_territory, nearest_team_color)
+    return (territory, int(troops_in_territory), nearest_team_color)
