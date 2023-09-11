@@ -38,7 +38,7 @@ def get_data():
         border_matrix = pool.apply(gen_border_matrix)
         game_step, troops_to_alloc = pool.apply(mapper_game_step)
         game_step.set_troops_to_alloc(troops_to_alloc if troops_to_alloc else 0)
-    return map_state, border_matrix, game_step, map_state[0][2]
+    return map_state, border_matrix, game_step
 
 
 if __name__ == "__main__":
