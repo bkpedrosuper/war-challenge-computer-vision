@@ -5,7 +5,7 @@ from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
 from war_challenge_computer_vision.colors.territory_color import get_colour_name
-from war_challenge_computer_vision.coordinates import Coordinate
+from war_challenge_computer_vision.coordinates import Coordinate, offset
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 from war_challenge_computer_vision.regions.regions import Region
 from war_challenge_computer_vision.utils.enviroment import is_dev
@@ -131,8 +131,8 @@ possible_colors = (
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
-    bottom_right = (top_left[0] + 32, top_left[1] + 32)
-    c1, c2 = (top_left[0] + 16, top_left[1] + 2)
+    bottom_right = (top_left[0] + offset, top_left[1] + offset)
+    c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
     counter = 0
     max_tries = 30
     while True:
@@ -175,7 +175,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         processed_image = (
             preprocessor.convert_to_gray()
             .resize((1500, 1500))
-            .threshold(190)
+            .threshold(185)
             .dilate_image(10)
             .erode_image(20)
             .invert_image()
@@ -185,7 +185,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
     counter = 0
-    max_counter = 50
+    max_counter = 10
     troops_in_territory = 1
     while counter < max_counter:
         troops_in_territory = str(
