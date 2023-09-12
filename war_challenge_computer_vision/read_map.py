@@ -1,4 +1,3 @@
-from collections import Counter
 from enum import Enum
 
 import pytesseract
@@ -135,10 +134,11 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     bottom_right = (top_left[0] + 32, top_left[1] + 32)
     c1, c2 = (top_left[0] + 16, top_left[1] + 2)
     counter = 0
+    max_tries = 30
     while True:
         color = tuple(image.getpixel((c1, c2)))  # type: ignore
         _, nearest_team_color = get_colour_name(tuple(color[:3]))  # type: ignore
-        if nearest_team_color in possible_colors or counter > 30:
+        if nearest_team_color in possible_colors or counter > max_tries:
             break
         c2 += 1
         counter += 1

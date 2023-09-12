@@ -126,14 +126,14 @@ Region.Brazil.set_borders(
 )
 Region.Argentina_Uruguay.set_borders(
     [
-        Region.Argentina_Uruguay,
+        Region.Brazil,
         Region.Peru_Bolivia_Chile,
     ]
 )
 Region.Peru_Bolivia_Chile.set_borders(
     [
         Region.Brazil,
-        Region.Peru_Bolivia_Chile,
+        Region.Colombia_Venezuela,
         Region.Argentina_Uruguay,
     ]
 )
@@ -211,6 +211,7 @@ Region.Greenland.set_borders(
     [
         Region.Mackenzie,
         Region.Labrador,
+        Region.Iceland,
     ]
 )
 Region.Iceland.set_borders(
@@ -221,6 +222,7 @@ Region.Iceland.set_borders(
 )
 Region.England.set_borders(
     [
+        Region.Iceland,
         Region.Spain_Portugal_France_Italy,
         Region.Germany,
         Region.Sweden,
@@ -228,6 +230,7 @@ Region.England.set_borders(
 )
 Region.Sweden.set_borders(
     [
+        Region.England,
         Region.Germany,
         Region.Moscow,
     ]
@@ -246,6 +249,7 @@ Region.Spain_Portugal_France_Italy.set_borders(
         Region.Germany,
         Region.Algeria_Nigeria,
         Region.Egypt,
+        Region.Poland_Yugoslavia,
     ]
 )
 Region.Poland_Yugoslavia.set_borders(
@@ -254,6 +258,7 @@ Region.Poland_Yugoslavia.set_borders(
         Region.Germany,
         Region.Moscow,
         Region.Egypt,
+        Region.Spain_Portugal_France_Italy,
     ]
 )
 Region.Moscow.set_borders(
@@ -262,6 +267,7 @@ Region.Moscow.set_borders(
         Region.Poland_Yugoslavia,
         Region.Aral,
         Region.Omsk,
+        Region.Middle_East,
     ]
 )
 Region.Algeria_Nigeria.set_borders(
@@ -284,10 +290,10 @@ Region.Egypt.set_borders(
 )
 Region.Congo.set_borders(
     [
-        Region.Madagascar,
-        Region.Congo,
         Region.Algeria_Nigeria,
-        Region.Egypt,
+        Region.South_Africa,
+        Region.Sudan,
+        
     ]
 )
 Region.Sudan.set_borders(
@@ -317,6 +323,7 @@ Region.Middle_East.set_borders(
         Region.Egypt,
         Region.India,
         Region.Aral,
+        Region.Moscow,
     ]
 )
 Region.Aral.set_borders(
