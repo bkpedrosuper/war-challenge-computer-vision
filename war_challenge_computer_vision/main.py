@@ -37,11 +37,11 @@ def get_data_from_image(image: Image.Image):
     coordinates = get_coordinates()
     with Pool(max(cpu_counts - 2, 1)) as pool:
         map_state = pool.map(
-            partial(mapper_process_territory, image=image),
+            partial(mapper_process_territory, image),
             coordinates,
         )
         border_matrix = pool.apply(gen_border_matrix)
-        game_step, troops_to_alloc = pool.apply(mapper_game_step)
+        game_step, troops_to_alloc = pool.apply(mapper_game_step, (image,))
         game_step.set_troops_to_alloc(troops_to_alloc if troops_to_alloc else 0)
     return map_state, border_matrix, game_step
 
