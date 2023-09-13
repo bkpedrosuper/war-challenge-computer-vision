@@ -118,14 +118,24 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
-possible_colors = (
-    "lightseagreen",
-    "olivedrab",
-    "firebrick",
-    "darkslateblue",
-    "goldenrod",
-    "darkslategray",
-)
+class PossibleColors(Enum):
+    AZUL = "lightseagreen"
+    VERDE = "olivedrab"
+    VERMELHO = "firebrick"
+    ROXO = "darkslateblue"
+    AMERELO = "goldenrod"
+    CINZA = "darkslategray"
+
+    @staticmethod
+    def get_all_possible_colors():
+        return (
+            "lightseagreen",
+            "olivedrab",
+            "firebrick",
+            "darkslateblue",
+            "goldenrod",
+            "darkslategray",
+        )
 
 
 @timer_func
@@ -138,7 +148,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     while True:
         color = tuple(image.getpixel((c1, c2)))  # type: ignore
         _, nearest_team_color = get_colour_name(tuple(color[:3]))  # type: ignore
-        if nearest_team_color in possible_colors or counter > max_tries:
+        if nearest_team_color in PossibleColors.get_all_possible_colors() or counter > max_tries:
             break
         c2 += 1
         counter += 1
@@ -155,7 +165,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     # print(territory, color)
 
     preprocessor = Preprocessor(slice_image)
-    if nearest_team_color not in "goldenrod":
+    if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
             .resize((1000, 1000))
