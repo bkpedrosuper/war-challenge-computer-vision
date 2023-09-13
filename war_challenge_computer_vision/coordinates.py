@@ -6,6 +6,8 @@ from war_challenge_computer_vision.regions.regions import Region
 original_res = (1920, 1080)
 
 offset = 28
+
+
 @dataclass
 class Coordinate:
     top_left: tuple[int, int]
@@ -142,6 +144,9 @@ coordinates_dict: dict[Region, Coordinate] = {
     ),
 }
 
-coordinates = (
-    (territory, coordinate) for (territory, coordinate) in coordinates_dict.items()
-)
+
+def get_coordinates():
+    coordinates = (
+        (territory, coordinate) for (territory, coordinate) in coordinates_dict.items()
+    )
+    return coordinates
