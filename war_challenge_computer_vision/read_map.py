@@ -168,7 +168,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((1000, 1000))
+            .resize((1500, 1500))
             .threshold(140)
             .center_number()
             # .crop()
@@ -184,8 +184,8 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     else:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((1500, 1500))
-            .threshold(185)
+            .resize((2000, 2000))
+            .threshold(200)
             .dilate_image(10)
             .erode_image(20)
             .invert_image()
@@ -195,7 +195,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
     counter = 0
-    max_counter = 10
+    max_counter = 20
     troops_in_territory = 1
     while counter < max_counter:
         troops_in_territory = str(
@@ -212,7 +212,8 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         except ValueError:
             troops_in_territory = 1
         processed_image = Preprocessor(processed_image).erode_image(5).build()
-
+    if counter == max_counter:
+        print(f"{territory} {nearest_team_color} {troops_in_territory}")
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")

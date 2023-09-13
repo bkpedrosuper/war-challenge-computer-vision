@@ -18,4 +18,8 @@ def get_colour_name(requested_colour: tuple[int, int, int]):
     except ValueError:
         closest_name = closest_colour(requested_colour)
         actual_name = None
+    compact = {'indigo':'darkslateblue',
+                'marron':'firebrick'}
+    if closest_name in compact.keys():
+        closest_name=compact[closest_name]
     return actual_name, closest_name

@@ -1,6 +1,8 @@
 from functools import partial
+import glob
 from multiprocessing import Pool
 from os import cpu_count
+import os
 from pathlib import Path
 
 from PIL import Image
@@ -47,7 +49,10 @@ def get_data_from_image(image: Image.Image):
 
 
 def get_data():
-    path = Path(__file__).parent.parent / "images/TelaJogo8.png"
+    pattern = str(Path(f"{os.path.expanduser('~')}/Pictures/Screenshots/").resolve()) + '/*'
+    list_of_files = glob.glob(pattern)
+    latest_file = max(list_of_files, key=os.path.getctime)
+    path = Path(latest_file)
     return get_data_from_path(path)
 
 
