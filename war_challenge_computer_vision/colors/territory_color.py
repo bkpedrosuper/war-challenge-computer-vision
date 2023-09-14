@@ -21,7 +21,7 @@ class PossibleColors(Enum):
             "firebrick",
             "darkslateblue",
             "goldenrod",
-            # "darkslategray",
+            "darkslategray",
         )
 
 
