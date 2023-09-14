@@ -28,6 +28,7 @@ def mapper_game_step(image: Image.Image):
 
 
 def get_data_from_path(image_filepath: Path):
+    # print(path)
     image = Image.open(image_filepath)
     image = image.resize(original_res)
     return get_data_from_image(image)
@@ -37,7 +38,7 @@ def get_data_from_image(image: Image.Image):
     cpu_counts = cpu_count()
     cpu_counts = cpu_counts if cpu_counts else 0
     coordinates = get_coordinates()
-    with Pool(max(cpu_counts - 2, 1)) as pool:
+    with Pool(max(cpu_counts - 1, 1)) as pool:
         map_state = pool.map(
             partial(mapper_process_territory, image),
             coordinates,
@@ -49,11 +50,12 @@ def get_data_from_image(image: Image.Image):
 
 
 def get_data():
-    pattern = str(Path(f"{os.path.expanduser('~')}/Pictures/Screenshots/").resolve()) + '/*'
+    pattern = (
+        str(Path(f"{os.path.expanduser('~')}/Pictures/Screenshots/").resolve()) + "/*"
+    )
     list_of_files = glob.glob(pattern)
     latest_file = max(list_of_files, key=os.path.getctime)
     path = Path(latest_file)
-    print(path)
     return get_data_from_path(path)
 
 

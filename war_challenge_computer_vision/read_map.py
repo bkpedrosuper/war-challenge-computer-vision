@@ -152,15 +152,15 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((1500, 1500))
+            .resize((2000, 2000))
             .threshold(145)
-            .center_number()
+            # .center_number()
             # .crop()
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
-            .dilate_image(10)
-            .erode_image(15)
+            .dilate_image(5)
+            .erode_image(10)
             # .add_border()
             .invert_image()
             .build()
@@ -170,15 +170,19 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             preprocessor.convert_to_gray()
             .resize((2000, 2000))
             .threshold(200)
-            .center_number()
-            .dilate_image(10)
-            .erode_image(15)
+            # .center_number()
+            .dilate_image(5)
+            .erode_image(10)
             .invert_image()
             .build()
         )
 
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
+    if is_dev:
+        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
+        image_slice.save(f"images/map_slices/{territory}_slice.png")
+        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     counter = 0
     max_counter = 20
     troops_in_territory = 1
@@ -200,8 +204,4 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if counter >= max_counter - 2:
         print(f"{territory} {nearest_team_color} {troops_in_territory}")
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
-    if is_dev:
-        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
-        image_slice.save(f"images/map_slices/{territory}_slice.png")
-        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     return (territory, int(troops_in_territory), nearest_team_color)

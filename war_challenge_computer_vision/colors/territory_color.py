@@ -36,11 +36,6 @@ def closest_colour(requested_colour: tuple[int, int, int]):
     return min_colours[min(min_colours.keys())]
 
 
-for name in PossibleColors.get_all_possible_colors():
-    rgb = webcolors.name_to_rgb(name)
-    print(name, rgb)
-
-
 def closest_colour_own(requested_colour: tuple[int, int, int]):
     min_colours: dict[int, str] = {}
     for name in PossibleColors.get_all_possible_colors():
