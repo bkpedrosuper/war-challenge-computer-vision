@@ -1,11 +1,8 @@
 from enum import Enum
-from pathlib import Path
 
 import numpy as np
 import webcolors
 from PIL import Image
-
-from war_challenge_computer_vision.regions.regions import Region
 
 
 class PossibleColors(Enum):
@@ -38,9 +35,12 @@ def closest_colour(requested_colour: tuple[int, int, int]):
         min_colours[(rd + gd + bd)] = name
     return min_colours[min(min_colours.keys())]
 
+
 for name in PossibleColors.get_all_possible_colors():
     rgb = webcolors.name_to_rgb(name)
     print(name, rgb)
+
+
 def closest_colour_own(requested_colour: tuple[int, int, int]):
     min_colours: dict[int, str] = {}
     for name in PossibleColors.get_all_possible_colors():
@@ -78,4 +78,4 @@ def get_color(t, image_slice: Image.Image):
 
     pixels = np.array(list(filter(filter_pixel, list(image_slice.getdata()))))
     avg_color: np.ndarray = np.mean(pixels, axis=0)
-    return closest_colour_own(tuple(avg_color[:3])) # type: ignore
+    return closest_colour_own(tuple(avg_color[:3]))  # type: ignore

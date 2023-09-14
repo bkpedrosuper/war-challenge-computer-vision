@@ -4,7 +4,7 @@ import pytesseract
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
-from war_challenge_computer_vision.colors.territory_color import PossibleColors, get_color, get_colour_name
+from war_challenge_computer_vision.colors.territory_color import PossibleColors, get_color
 from war_challenge_computer_vision.coordinates import Coordinate, offset
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 from war_challenge_computer_vision.regions.regions import Region
