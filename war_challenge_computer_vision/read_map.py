@@ -4,7 +4,7 @@ import pytesseract
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
-from war_challenge_computer_vision.colors.territory_color import get_colour_name
+from war_challenge_computer_vision.colors.territory_color import PossibleColors, get_color, get_colour_name
 from war_challenge_computer_vision.coordinates import Coordinate, offset
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 from war_challenge_computer_vision.regions.regions import Region
@@ -118,45 +118,29 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
-class PossibleColors(Enum):
-    AZUL = "lightseagreen"
-    VERDE = "olivedrab"
-    VERMELHO = "firebrick"
-    ROXO = "darkslateblue"
-    AMERELO = "goldenrod"
-    CINZA = "darkslategray"
-
-    @staticmethod
-    def get_all_possible_colors():
-        return (
-            "lightseagreen",
-            "olivedrab",
-            "firebrick",
-            "darkslateblue",
-            "goldenrod",
-            "darkslategray",
-        )
 
 
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + offset, top_left[1] + offset)
-    c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
-    counter = 0
-    max_tries = 30
-    while True:
-        color = tuple(image.getpixel((c1, c2)))  # type: ignore
-        _, nearest_team_color = get_colour_name(tuple(color[:3]))  # type: ignore
-        if nearest_team_color in PossibleColors.get_all_possible_colors() or counter > max_tries:
-            break
-        c2 += 1
-        counter += 1
+    # c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
+    # counter = 0
+    # max_tries = 30
+    # while True:
+    #     color = tuple(image.getpixel((c1, c2)))  # type: ignore
+    #     _, nearest_team_color = get_colour_name(tuple(color[:3]))  # type: ignore
+    #     if nearest_team_color in PossibleColors.get_all_possible_colors() or counter > max_tries:
+    #         break
+    #     c2 += 1
+    #     counter += 1
 
     x1, y1 = top_left
     x2, y2 = bottom_right
 
-    slice_image = image.crop((x1, y1, x2, y2))
+    image_slice = image.crop((x1, y1, x2, y2))
+    nearest_team_color = get_color(territory, image_slice)
+    # print(territory, color_aprox, nearest_team_color)
     # preprocessor_color = Preprocessor(slice_image.crop((0, 14, 32, 24)))
     # processed_image_color = preprocessor_color.resize((500, 500)).filter_mean().build()
     # color: tuple[int, int, int, int] = tuple(
@@ -164,19 +148,19 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     # )  # type: ignore
     # print(territory, color)
 
-    preprocessor = Preprocessor(slice_image)
+    preprocessor = Preprocessor(image_slice)
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
             .resize((1500, 1500))
-            .threshold(140)
+            .threshold(145)
             .center_number()
             # .crop()
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
             .dilate_image(10)
-            .erode_image(20)
+            .erode_image(15)
             # .add_border()
             .invert_image()
             .build()
@@ -186,8 +170,9 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             preprocessor.convert_to_gray()
             .resize((2000, 2000))
             .threshold(200)
+            .center_number()
             .dilate_image(10)
-            .erode_image(20)
+            .erode_image(15)
             .invert_image()
             .build()
         )
@@ -212,11 +197,11 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         except ValueError:
             troops_in_territory = 1
         processed_image = Preprocessor(processed_image).erode_image(5).build()
-    if counter == max_counter:
+    if counter >= max_counter - 2:
         print(f"{territory} {nearest_team_color} {troops_in_territory}")
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
-        slice_image.save(f"images/map_slices/{territory}_slice.png")
+        image_slice.save(f"images/map_slices/{territory}_slice.png")
         # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     return (territory, int(troops_in_territory), nearest_team_color)

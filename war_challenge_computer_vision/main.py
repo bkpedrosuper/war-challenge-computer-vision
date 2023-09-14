@@ -1,8 +1,8 @@
-from functools import partial
 import glob
+import os
+from functools import partial
 from multiprocessing import Pool
 from os import cpu_count
-import os
 from pathlib import Path
 
 from PIL import Image
@@ -53,6 +53,7 @@ def get_data():
     list_of_files = glob.glob(pattern)
     latest_file = max(list_of_files, key=os.path.getctime)
     path = Path(latest_file)
+    print(path)
     return get_data_from_path(path)
 
 
