@@ -127,19 +127,19 @@ def get_game_step(image: ImagePIL) -> GameStep:
 
 @dataclass
 class PreprocessingConfig:
-    image_resize = (1500, 1500)
-    image_resize_yellow = (2000, 2000)
-    threshold = 140
-    threshold_yellow = 210
-    median_filter_footprint_size = 5
-    blur_filter_footprint_size = 5
-    dilate_times = 10
-    erode_times = 15
-    max_counter = 10
-    erode_times_each_try = 5
-    default_troops_count = 1
+    image_resize: tuple[int, int] = (1500, 1500)
+    image_resize_yellow: tuple[int, int] = (2000, 2000)
+    threshold: int = 140
+    threshold_yellow: int = 210
+    median_filter_footprint_size: int = 5
+    blur_filter_footprint_size: int = 5
+    dilate_times: int = 10
+    erode_times: int = 15
+    max_counter: int = 10
+    erode_times_each_try: int = 5
+    default_troops_count: int = 1
 
-    gpu=False
+    gpu: bool = False
 
 
 class SingletonMeta(type):
