@@ -23,6 +23,18 @@ class Preprocessor:
         self.processed_image = self.processed_image.filter(ImageFilter.BLUR)
         return self
 
+    def filter_median(self, radius=7):
+        self.processed_image = self.processed_image.filter(
+            ImageFilter.MedianFilter(radius)
+        )
+        return self
+
+    def blur_image(self, radius=7):
+        self.processed_image = self.processed_image.filter(
+            ImageFilter.GaussianBlur(radius)
+        )
+        return self
+
     def add_border(self, border=10, fill="white"):
         self.processed_image = ImageOps.expand(
             self.processed_image, border=border, fill=fill

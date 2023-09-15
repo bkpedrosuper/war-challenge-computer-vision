@@ -4,7 +4,10 @@ import pytesseract
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
 
-from war_challenge_computer_vision.colors.territory_color import PossibleColors, get_color
+from war_challenge_computer_vision.colors.territory_color import (
+    PossibleColors,
+    get_color,
+)
 from war_challenge_computer_vision.coordinates import Coordinate, offset
 from war_challenge_computer_vision.preprocessing.preprocessing import Preprocessor
 from war_challenge_computer_vision.regions.regions import Region
@@ -118,8 +121,6 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
-
-
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
     top_left = coordinate.top_left
@@ -152,15 +153,16 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((2000, 2000))
-            .threshold(145)
+            .resize((1500, 1500))
+            .filter_median(3)
+            .blur_image()
+            .threshold(190)
             # .center_number()
             # .crop()
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
             .dilate_image(5)
-            .erode_image(10)
             # .add_border()
             .invert_image()
             .build()
@@ -168,21 +170,18 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     else:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((2000, 2000))
-            .threshold(200)
+            .resize((1500, 1500))
+            .filter_median(3)
+            .blur_image()
+            .threshold(210)
             # .center_number()
             .dilate_image(5)
-            .erode_image(10)
             .invert_image()
             .build()
         )
 
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
-    if is_dev:
-        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
-        image_slice.save(f"images/map_slices/{territory}_slice.png")
-        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     counter = 0
     max_counter = 20
     troops_in_territory = 1
@@ -191,7 +190,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             pytesseract.image_to_string(
                 processed_image,
                 lang="eng",
-                config="--psm 8 --oem 3 outputbase digits -c tessedit_char_whitelist=0123456789",
+                config="--psm 8 --oem 1 -c tessedit_char_whitelist=0123456789 --dpi 300",
             )
         )
         counter += 1
@@ -200,8 +199,17 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             break
         except ValueError:
             troops_in_territory = 1
-        processed_image = Preprocessor(processed_image).erode_image(5).build()
+        processed_image = Preprocessor(processed_image).dilate_image(2).build()
+        if territory == Region.Alaska:
+            processed_image.save(
+                f"images/map_slices/{territory}/{territory}_slice_threshold_{counter}.png"
+            )
+
     if counter >= max_counter - 2:
         print(f"{territory} {nearest_team_color} {troops_in_territory}")
+    if is_dev:
+        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
+        image_slice.save(f"images/map_slices/{territory}_slice.png")
+        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     return (territory, int(troops_in_territory), nearest_team_color)
