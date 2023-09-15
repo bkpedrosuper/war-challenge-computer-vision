@@ -150,7 +150,7 @@ class EasyOCRSingleton(metaclass=SingletonMeta):
     @property
     def reader(self):
         if self._reader is None:
-            self._reader = easyocr.Reader(["en", "pt"], gpu=False)
+            self._reader = easyocr.Reader(["en", "pt"], gpu=True)
         return self._reader
 
 
@@ -189,9 +189,9 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         processed_image = (
             preprocessor.convert_to_gray()
             .resize((1500, 1500))
-            # .filter_median(5)
-            # .blur_image(8)
-            .threshold(145)
+            .filter_median(5)
+            .blur_image(8)
+            .threshold(140)
             # .center_number()
             # .crop()
             # .resize((1000,1000))
@@ -199,7 +199,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             # .threshold(170)
             .dilate_image(10)
             .erode_image(15)
-            .add_border()
+            # .add_border()
             .invert_image()
             .build()
         )
@@ -207,14 +207,14 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         processed_image = (
             preprocessor.convert_to_gray()
             .resize((1500, 1500))
-            # .filter_median(5)
-            # .blur_image(8)
+            .filter_median(5)
+            .blur_image(8)
             .threshold(210)
             # .center_number()
             .dilate_image(10)
             .erode_image(15)
+            # .add_border()
             .invert_image()
-            .add_border()
             .build()
         )
 
@@ -232,7 +232,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             pytesseract.image_to_string(
                 processed_image,
                 lang="eng",
-                config="--psm 9 --oem 3 -c tessedit_char_whitelist=0123456789iI",
+                config="--psm 9 --oem 1 -c tessedit_char_whitelist=0123456789iI",
             )
         )
         counter += 1
