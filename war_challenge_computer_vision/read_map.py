@@ -1,5 +1,6 @@
 from enum import Enum
 
+import easyocr
 import pytesseract
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
@@ -123,6 +124,7 @@ def get_game_step(image: ImagePIL) -> GameStep:
 
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
+    easy_ocr_reader = easyocr.Reader(["en", "por"])
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + offset, top_left[1] + offset)
     # c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
@@ -153,39 +155,40 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((2000, 2000))
-            .filter_median(5)
-            .blur_image(8)
-            .threshold(150)
-            .center_number()
+            .resize((3000, 3000))
+            # .filter_median(5)
+            # .blur_image(8)
+            .threshold(145)
+            # .center_number()
             # .crop()
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
-            .dilate_image(5)
-            .erode_image(10)
-            # .add_border()
+            .dilate_image(10)
+            .erode_image(15)
+            .add_border()
             .invert_image()
             .build()
         )
     else:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((2000, 2000))
-            .filter_median(5)
-            .blur_image(8)
+            .resize((3000, 3000))
+            # .filter_median(5)
+            # .blur_image(8)
             .threshold(210)
-            .center_number()
-            .dilate_image(5)
-            .erode_image(10)
+            # .center_number()
+            .dilate_image(10)
+            .erode_image(15)
             .invert_image()
+            .add_border()
             .build()
         )
 
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
     counter = 0
-    max_counter = 20
+    max_counter = 10
     troops_in_territory = 1
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
@@ -200,12 +203,14 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
         )
         counter += 1
         try:
-            troops_in_territory = troops_in_territory.replace('i', '1').replace('I', '1')
+            troops_in_territory = troops_in_territory.replace("i", "1").replace(
+                "I", "1"
+            )
             troops_in_territory = int(troops_in_territory)
             break
         except ValueError:
             troops_in_territory = 1
-        processed_image = Preprocessor(processed_image).dilate_image(2).build()
+        processed_image = Preprocessor(processed_image).dilate_image(5).build()
         if territory == Region.Alaska:
             processed_image.save(
                 f"images/map_slices/{territory}/{territory}_slice_threshold_{counter}.png"
