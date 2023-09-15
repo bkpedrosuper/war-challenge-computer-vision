@@ -195,7 +195,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             pytesseract.image_to_string(
                 processed_image,
                 lang="eng",
-                config="--psm 8 --oem 1 -c tessedit_char_whitelist=0123456789iI",
+                config="--psm 9 --oem 3 -c tessedit_char_whitelist=0123456789iI",
             )
         )
         counter += 1
