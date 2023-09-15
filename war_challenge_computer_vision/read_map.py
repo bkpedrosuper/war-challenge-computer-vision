@@ -139,6 +139,8 @@ class PreprocessingConfig:
     erode_times_each_try = 5
     default_troops_count = 1
 
+    gpu=False
+
 
 class SingletonMeta(type):
     """
@@ -163,10 +165,9 @@ class SingletonMeta(type):
 class EasyOCRSingleton(metaclass=SingletonMeta):
     _reader: easyocr.Reader | None = None
 
-    @property
-    def reader(self):
+    def reader(self, gpu=False):
         if self._reader is None:
-            self._reader = easyocr.Reader(["en", "pt"], gpu=True)
+            self._reader = easyocr.Reader(["en", "pt"], gpu=gpu)
         return self._reader
 
 
@@ -272,7 +273,7 @@ def process_territory(
 
     if counter >= max_counter - 1:
         easy_ocr_singleton = EasyOCRSingleton()
-        reader = easy_ocr_singleton.reader
+        reader = easy_ocr_singleton.reader(config.gpu)
         result = reader.readtext(
             image=np.array(original_processed_image.resize((500, 500))),
             decoder="beamsearch",
