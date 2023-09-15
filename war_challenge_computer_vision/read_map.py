@@ -1,6 +1,8 @@
 from enum import Enum
+from typing import ClassVar
 
 import easyocr
+import numpy as np
 import pytesseract
 from PIL.Image import Image as ImagePIL
 from unidecode import unidecode
@@ -122,9 +124,40 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
+class SingletonMeta(type):
+    """
+    The Singleton class can be implemented in different ways in Python. Some
+    possible methods include: base class, decorator, metaclass. We will use the
+    metaclass because it is best suited for this purpose.
+    """
+
+    _instances: ClassVar = {}
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Possible changes to the value of the `__init__` argument do not affect
+        the returned instance.
+        """
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class EasyOCRSingleton(metaclass=SingletonMeta):
+    _reader: easyocr.Reader | None = None
+
+    @property
+    def reader(self):
+        if self._reader is None:
+            self._reader = easyocr.Reader(["en", "pt"], gpu=False)
+        return self._reader
+
+
 @timer_func
 def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
-    easy_ocr_reader = easyocr.Reader(["en", "por"])
+    easy_ocr_singleton = EasyOCRSingleton()
+
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + offset, top_left[1] + offset)
     # c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
@@ -155,7 +188,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((3000, 3000))
+            .resize((1500, 1500))
             # .filter_median(5)
             # .blur_image(8)
             .threshold(145)
@@ -173,7 +206,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     else:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((3000, 3000))
+            .resize((1500, 1500))
             # .filter_median(5)
             # .blur_image(8)
             .threshold(210)
@@ -193,6 +226,7 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
         image_slice.save(f"images/map_slices/{territory}_slice.png")
+    original_processed_image = processed_image.copy()
     while counter < max_counter:
         troops_in_territory = str(
             pytesseract.image_to_string(
@@ -210,14 +244,24 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             break
         except ValueError:
             troops_in_territory = 1
-        processed_image = Preprocessor(processed_image).dilate_image(5).build()
-        if territory == Region.Alaska:
-            processed_image.save(
-                f"images/map_slices/{territory}/{territory}_slice_threshold_{counter}.png"
-            )
 
-    if counter >= max_counter - 2:
+        processed_image = Preprocessor(processed_image).dilate_image(5).build()
+
+    if counter >= max_counter - 1:
+        reader = easy_ocr_singleton.reader
+        result = reader.readtext(
+            image=np.array(original_processed_image.resize((500, 500))),
+            decoder="beamsearch",
+            detail=0,
+            workers=0,
+        )
+        troops_in_territory = "".join(result)
+        try:
+            troops_in_territory = troops_in_territory.replace("i", "1").replace(
+                "I", "1"
+            )
+            troops_in_territory = int(troops_in_territory)
+        except ValueError:
+            troops_in_territory = 1
         print(f"{territory} {nearest_team_color} {troops_in_territory}")
-        # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
-    # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     return (territory, int(troops_in_territory), nearest_team_color)

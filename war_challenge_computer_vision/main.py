@@ -38,7 +38,7 @@ def get_data_from_image(image: Image.Image):
     cpu_counts = cpu_count()
     cpu_counts = cpu_counts if cpu_counts else 0
     coordinates = get_coordinates()
-    with Pool(max(cpu_counts - 1, 1)) as pool:
+    with Pool(min(max(cpu_counts - 1, 1), 14), maxtasksperchild=2) as pool:
         map_state = pool.map(
             partial(mapper_process_territory, image),
             coordinates,
