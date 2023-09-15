@@ -162,7 +162,8 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
-            .dilate_image(5)
+            .dilate_image(10)
+            .erode_image(20)
             # .add_border()
             .invert_image()
             .build()
@@ -175,7 +176,8 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             .blur_image()
             .threshold(210)
             # .center_number()
-            .dilate_image(5)
+            .dilate_image(10)
+            .erode_image(20)
             .invert_image()
             .build()
         )
@@ -185,16 +187,20 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     counter = 0
     max_counter = 20
     troops_in_territory = 1
+    if is_dev:
+        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
+        image_slice.save(f"images/map_slices/{territory}_slice.png")
     while counter < max_counter:
         troops_in_territory = str(
             pytesseract.image_to_string(
                 processed_image,
                 lang="eng",
-                config="--psm 9 --oem 1 -c tessedit_char_whitelist=0123456789 --dpi 300",
+                config="--psm 8 --oem 1 -c tessedit_char_whitelist=0123456789iI",
             )
         )
         counter += 1
         try:
+            troops_in_territory = troops_in_territory.replace('i', '1').replace('I', '1')
             troops_in_territory = int(troops_in_territory)
             break
         except ValueError:
@@ -207,9 +213,6 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
 
     if counter >= max_counter - 2:
         print(f"{territory} {nearest_team_color} {troops_in_territory}")
-    if is_dev:
-        processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
-        image_slice.save(f"images/map_slices/{territory}_slice.png")
         # processed_image_color.save(f"images/map_slices/{territory}_color_slice.png")
     # print(f"There is {str(troops_in_territory).strip()} in {territory}")
     return (territory, int(troops_in_territory), nearest_team_color)
