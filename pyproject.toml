@@ -17,8 +17,8 @@ scikit-image = "^0.21.0"
 python-dotenv = {extras = ["cli"], version = "^1.0.0"}
 unidecode = "^1.3.6"
 easyocr = {git = "https://github.com/JaidedAI/EasyOCR.git"}
-torch = {version = "^2.0.1+cpu", source = "pytorch-cpu"}
-torchvision = {version = "^0.15.2+cpu", source = "pytorch-cpu"}
+torch = {version = "^2.2.0.dev20230915+cu121", allow-prereleases = true, source = "pytorch-gpu-cuda-12"}
+torchvision = {version = "^0.17.0.dev20230915+cu121", allow-prereleases = true, source = "pytorch-gpu-cuda-12"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -35,6 +35,18 @@ priority = "primary"
 [[tool.poetry.source]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+priority = "supplemental"
+
+
+[[tool.poetry.source]]
+name = "pytorch-gpu-cuda-12"
+url = "https://download.pytorch.org/whl/nightly/cu121"
+priority = "supplemental"
+
+
+[[tool.poetry.source]]
+name = "pytorch-gpu-amd"
+url = "https://download.pytorch.org/whl/rocm5.4.2"
 priority = "supplemental"
 
 [build-system]

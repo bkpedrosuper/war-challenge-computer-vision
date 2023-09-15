@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import ClassVar
 
@@ -124,6 +125,21 @@ def get_game_step(image: ImagePIL) -> GameStep:
     return game_step
 
 
+@dataclass
+class PreprocessingConfig:
+    image_resize = (1500, 1500)
+    image_resize_yellow = (2000, 2000)
+    threshold = 140
+    threshold_yellow = 210
+    median_filter_footprint_size = 5
+    blur_filter_footprint_size = 5
+    dilate_times = 10
+    erode_times = 15
+    max_counter = 10
+    erode_times_each_try = 5
+    default_troops_count = 1
+
+
 class SingletonMeta(type):
     """
     The Singleton class can be implemented in different ways in Python. Some
@@ -155,9 +171,12 @@ class EasyOCRSingleton(metaclass=SingletonMeta):
 
 
 @timer_func
-def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate):
-    easy_ocr_singleton = EasyOCRSingleton()
-
+def process_territory(
+    image: ImagePIL,
+    territory: Region,
+    coordinate: Coordinate,
+    config: PreprocessingConfig,
+):
     top_left = coordinate.top_left
     bottom_right = (top_left[0] + offset, top_left[1] + offset)
     # c1, c2 = (top_left[0] + (offset / 2), top_left[1] + 0)
@@ -188,17 +207,17 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     if nearest_team_color not in PossibleColors.AMERELO.value:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((1500, 1500))
-            .filter_median(5)
-            .blur_image(8)
-            .threshold(140)
+            .resize(config.image_resize)
+            .filter_median(config.median_filter_footprint_size)
+            .blur_image(config.blur_filter_footprint_size)
+            .threshold(config.threshold)
             # .center_number()
             # .crop()
             # .resize((1000,1000))
             # .filter_mean(10)
             # .threshold(170)
-            .dilate_image(10)
-            .erode_image(15)
+            .dilate_image(config.dilate_times)
+            .erode_image(config.erode_times)
             # .add_border()
             .invert_image()
             .build()
@@ -206,13 +225,13 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     else:
         processed_image = (
             preprocessor.convert_to_gray()
-            .resize((1500, 1500))
-            .filter_median(5)
-            .blur_image(8)
-            .threshold(210)
+            .resize(config.image_resize_yellow)
+            .filter_median(config.median_filter_footprint_size)
+            .blur_image(config.blur_filter_footprint_size)
+            .threshold(config.threshold_yellow)
             # .center_number()
-            .dilate_image(10)
-            .erode_image(15)
+            .dilate_image(config.dilate_times)
+            .erode_image(config.erode_times)
             # .add_border()
             .invert_image()
             .build()
@@ -221,8 +240,8 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
     # processed_image = ImageOps.expand(processed_image, border=10, fill="black")
 
     counter = 0
-    max_counter = 10
-    troops_in_territory = 1
+    max_counter = config.max_counter
+    troops_in_territory = config.default_troops_count
     if is_dev:
         processed_image.save(f"images/map_slices/{territory}_slice_threshold.png")
         image_slice.save(f"images/map_slices/{territory}_slice.png")
@@ -243,11 +262,16 @@ def process_territory(image: ImagePIL, territory: Region, coordinate: Coordinate
             troops_in_territory = int(troops_in_territory)
             break
         except ValueError:
-            troops_in_territory = 1
+            troops_in_territory = config.default_troops_count
 
-        processed_image = Preprocessor(processed_image).dilate_image(5).build()
+        processed_image = (
+            Preprocessor(processed_image)
+            .dilate_image(config.erode_times_each_try)
+            .build()
+        )
 
     if counter >= max_counter - 1:
+        easy_ocr_singleton = EasyOCRSingleton()
         reader = easy_ocr_singleton.reader
         result = reader.readtext(
             image=np.array(original_processed_image.resize((500, 500))),

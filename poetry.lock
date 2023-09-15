@@ -166,6 +166,41 @@ testing = ["covdefaults (>=2.3)", "coverage (>=7.3)", "diff-cover (>=7.7)", "pyt
 typing = ["typing-extensions (>=4.7.1)"]
 
 [[package]]
+name = "fsspec"
+version = "2023.9.0"
+description = "File-system specification"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "fsspec-2023.9.0-py3-none-any.whl", hash = "sha256:d55b9ab2a4c1f2b759888ae9f93e40c2aa72c0808132e87e282b549f9e6c4254"},
+    {file = "fsspec-2023.9.0.tar.gz", hash = "sha256:4dbf0fefee035b7c6d3bbbe6bc99b2f201f40d4dca95b67c2b719be77bcd917f"},
+]
+
+[package.extras]
+abfs = ["adlfs"]
+adl = ["adlfs"]
+arrow = ["pyarrow (>=1)"]
+dask = ["dask", "distributed"]
+devel = ["pytest", "pytest-cov"]
+dropbox = ["dropbox", "dropboxdrivefs", "requests"]
+full = ["adlfs", "aiohttp (!=4.0.0a0,!=4.0.0a1)", "dask", "distributed", "dropbox", "dropboxdrivefs", "fusepy", "gcsfs", "libarchive-c", "ocifs", "panel", "paramiko", "pyarrow (>=1)", "pygit2", "requests", "s3fs", "smbprotocol", "tqdm"]
+fuse = ["fusepy"]
+gcs = ["gcsfs"]
+git = ["pygit2"]
+github = ["requests"]
+gs = ["gcsfs"]
+gui = ["panel"]
+hdfs = ["pyarrow (>=1)"]
+http = ["aiohttp (!=4.0.0a0,!=4.0.0a1)", "requests"]
+libarchive = ["libarchive-c"]
+oci = ["ocifs"]
+s3 = ["s3fs"]
+sftp = ["paramiko"]
+smb = ["smbprotocol"]
+ssh = ["paramiko"]
+tqdm = ["tqdm"]
+
+[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -749,6 +784,32 @@ click = {version = ">=5.0", optional = true, markers = "extra == \"cli\""}
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "pytorch-triton"
+version = "2.1.0+6e4932cda8"
+description = "A language and compiler for custom Deep Learning operations"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytorch_triton-2.1.0+6e4932cda8-cp310-cp310-linux_x86_64.whl", hash = "sha256:5b17dabd84aee11a706fd9760bdf6c169b612f1fc02ba0949997c8af162b9db1"},
+    {file = "pytorch_triton-2.1.0+6e4932cda8-cp311-cp311-linux_x86_64.whl", hash = "sha256:7d196d1f5ba9e7248ec1432b483c8eeb1536655f9849243cc73445cff76497eb"},
+    {file = "pytorch_triton-2.1.0+6e4932cda8-cp38-cp38-linux_x86_64.whl", hash = "sha256:6d992b387c06d43e797e02b14546e1a191fa24435e56c5f4e50813ae7765ed17"},
+    {file = "pytorch_triton-2.1.0+6e4932cda8-cp39-cp39-linux_x86_64.whl", hash = "sha256:d4f2a6f5d09a9a5f059238a12b78e120cdf90f7ab149ba6497e83b3950b5ac71"},
+]
+
+[package.dependencies]
+filelock = "*"
+
+[package.extras]
+build = ["cmake (>=3.20)", "lit"]
+tests = ["autopep8", "flake8", "isort", "numpy", "pytest", "scipy (>=1.7.1)", "torch"]
+tutorials = ["matplotlib", "pandas", "tabulate", "torch"]
+
+[package.source]
+type = "legacy"
+url = "https://download.pytorch.org/whl/nightly/cu121"
+reference = "pytorch-gpu-cuda-12"
+
+[[package]]
 name = "pytz"
 version = "2023.3.post1"
 description = "World timezone definitions, modern and historical"
@@ -1106,66 +1167,69 @@ files = [
 
 [[package]]
 name = "torch"
-version = "2.0.1+cpu"
+version = "2.2.0.dev20230915+cu121"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "torch-2.0.1+cpu-cp310-cp310-linux_x86_64.whl", hash = "sha256:fec257249ba014c68629a1994b0c6e7356e20e1afc77a87b9941a40e5095285d"},
-    {file = "torch-2.0.1+cpu-cp310-cp310-win_amd64.whl", hash = "sha256:ca88b499973c4c027e32c4960bf20911d7e984bd0c55cda181dc643559f3d93f"},
-    {file = "torch-2.0.1+cpu-cp311-cp311-linux_x86_64.whl", hash = "sha256:274d4acf486ef50ce1066ffe9d500beabb32bde69db93e3b71d0892dd148956c"},
-    {file = "torch-2.0.1+cpu-cp311-cp311-win_amd64.whl", hash = "sha256:e2603310bdff4b099c4c41ae132192fc0d6b00932ae2621d52d87218291864be"},
-    {file = "torch-2.0.1+cpu-cp38-cp38-linux_x86_64.whl", hash = "sha256:8046f49deae5a3d219b9f6059a1f478ae321f232e660249355a8bf6dcaa810c1"},
-    {file = "torch-2.0.1+cpu-cp38-cp38-win_amd64.whl", hash = "sha256:2ac4382ff090035f9045b18afe5763e2865dd35f2d661c02e51f658d95c8065a"},
-    {file = "torch-2.0.1+cpu-cp39-cp39-linux_x86_64.whl", hash = "sha256:73482a223d577407c45685fde9d2a74ba42f0d8d9f6e1e95c08071dc55c47d7b"},
-    {file = "torch-2.0.1+cpu-cp39-cp39-win_amd64.whl", hash = "sha256:f263f8e908288427ae81441fef540377f61e339a27632b1bbe33cf78292fdaea"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp310-cp310-linux_x86_64.whl", hash = "sha256:a7951c60f04397f4c4fdf14f339c52b0f6235f8898b1cbd8980200c11b2b3946"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp310-cp310-win_amd64.whl", hash = "sha256:30f716709db59007ed8e02eb8ffb5cd7332f5533b4e09a406ee4e561259dd56f"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp311-cp311-linux_x86_64.whl", hash = "sha256:f8a3f39bb7467653cc1849e01101333f8c02078af112e8ceba3467089c99e40a"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp311-cp311-win_amd64.whl", hash = "sha256:59b5425185b8d29e43edbae93fe909c68535400728d55b16dd1e90534d3be0c0"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp38-cp38-linux_x86_64.whl", hash = "sha256:76c3452dc5cf9b97d8f48744615fafa6012cecc08c5cc0d7f516b7df45e5e8b9"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp38-cp38-win_amd64.whl", hash = "sha256:95b83e9c1ad1a940125636ecaa0de7a15bf393549248ddb0e9eca787e21e1abe"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp39-cp39-linux_x86_64.whl", hash = "sha256:be521c3816ba35fc74617988e88c1e565bf8b0b2f32bcc0c1e15b3320fcdab20"},
+    {file = "torch-2.2.0.dev20230915+cu121-cp39-cp39-win_amd64.whl", hash = "sha256:ac14ac7e8ebeebb3a2f46630cb76b0e5002de96cc3993ce76c3b63aba9af21fe"},
 ]
 
 [package.dependencies]
 filelock = "*"
+fsspec = "*"
 jinja2 = "*"
 networkx = "*"
+pytorch-triton = "2.1.0+6e4932cda8"
 sympy = "*"
 typing-extensions = "*"
 
 [package.extras]
+dynamo = ["jinja2"]
 opt-einsum = ["opt-einsum (>=3.3)"]
 
 [package.source]
 type = "legacy"
-url = "https://download.pytorch.org/whl/cpu"
-reference = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/nightly/cu121"
+reference = "pytorch-gpu-cuda-12"
 
 [[package]]
 name = "torchvision"
-version = "0.15.2+cpu"
+version = "0.17.0.dev20230915+cu121"
 description = "image and video datasets and models for torch deep learning"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "torchvision-0.15.2+cpu-cp310-cp310-linux_x86_64.whl", hash = "sha256:aae0be6883d2cd5a23cb544ee0928288a27df0455430ef9dd6e631c5464095f5"},
-    {file = "torchvision-0.15.2+cpu-cp310-cp310-win_amd64.whl", hash = "sha256:44d4b8976b5aaf97811ec05cb526531ac08dc5c76c2f5bc1c919b9a653cbc206"},
-    {file = "torchvision-0.15.2+cpu-cp311-cp311-linux_x86_64.whl", hash = "sha256:1633c0b7ead69d2cd3fbe8aeaa146c76a68691bd3599facfffd2da925973e044"},
-    {file = "torchvision-0.15.2+cpu-cp311-cp311-win_amd64.whl", hash = "sha256:3ec9785df54906d1631c5574ba0df3cc3adcd43286774b93fbe82c97c4714977"},
-    {file = "torchvision-0.15.2+cpu-cp38-cp38-linux_x86_64.whl", hash = "sha256:af6bc2c7b0b8b2a32745e56f057a5956caf0d6031a94eb80b283dcd475d8feb0"},
-    {file = "torchvision-0.15.2+cpu-cp38-cp38-win_amd64.whl", hash = "sha256:f61cc175f75392c7565ad1144d2e511b14002d061a2fd31a73b045259eb9100e"},
-    {file = "torchvision-0.15.2+cpu-cp39-cp39-linux_x86_64.whl", hash = "sha256:e1e3988373afa29c813b140dbb5b7a074214813fd0ef97d2538966b9bd8d92d9"},
-    {file = "torchvision-0.15.2+cpu-cp39-cp39-win_amd64.whl", hash = "sha256:b9c2745a966d5ffcad7b17807ef3acf4149f497c80f5f4571f69a1817436e56f"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp310-cp310-linux_x86_64.whl", hash = "sha256:29e85009f5141099072720bb2430e524f3e2ea2ac7471b35ca9fc5567529ad3e"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp310-cp310-win_amd64.whl", hash = "sha256:3263fc442ef67d81de248e9bcbbf69e5c6b23817a6cf7f8096137fdde286daef"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp311-cp311-linux_x86_64.whl", hash = "sha256:fe6daa2e4519ee9cc9112dae7c50198135899bc53ebd867f1be4ebe86a7f964e"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp311-cp311-win_amd64.whl", hash = "sha256:369be9a2659cc470ecf37558e0823b0a3723dd4d89ca18c8263efb0e38933193"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp38-cp38-linux_x86_64.whl", hash = "sha256:55495d5e8fbc44b7bf150143c4be142f74ca240dbe10a6e77a62ae7f05f64e61"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp38-cp38-win_amd64.whl", hash = "sha256:fc68da0ff7c10859db1c80965a397dfc3cbc1a2063f23bce8af23354ede3ede1"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp39-cp39-linux_x86_64.whl", hash = "sha256:8a81f5f81e89a6e5c9049ebb1781ede029dfd1c778b2bc0e0a0f690b93082c62"},
+    {file = "torchvision-0.17.0.dev20230915+cu121-cp39-cp39-win_amd64.whl", hash = "sha256:873833037b226facefc973c36c9def4462b1b2a952cc729212f5251e530059e5"},
 ]
 
 [package.dependencies]
 numpy = "*"
 pillow = ">=5.3.0,<8.3.dev0 || >=8.4.dev0"
 requests = "*"
-torch = "2.0.1"
+torch = "2.2.0.dev20230915"
 
 [package.extras]
 scipy = ["scipy"]
 
 [package.source]
 type = "legacy"
-url = "https://download.pytorch.org/whl/cpu"
-reference = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/nightly/cu121"
+reference = "pytorch-gpu-cuda-12"
 
 [[package]]
 name = "typing-extensions"
@@ -1286,4 +1350,4 @@ tests = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0ebe27c218131a7bbb57681050040e9e437a59ab33ffbac5f92bffde86ff835d"
+content-hash = "614214f4521e7411ce1790d67fc384aa8ab67151c2c8396b7936ee47e79f9c7a"

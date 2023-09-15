@@ -12,14 +12,20 @@ from war_challenge_computer_vision.coordinates import (
     get_coordinates,
     original_res,
 )
-from war_challenge_computer_vision.read_map import get_game_step, process_territory
+from war_challenge_computer_vision.read_map import (
+    PreprocessingConfig,
+    get_game_step,
+    process_territory,
+)
 from war_challenge_computer_vision.regions.regions import Region, gen_border_matrix
 
 
-def mapper_process_territory(image: Image.Image, data: tuple[Region, Coordinate]):
+def mapper_process_territory(
+    image: Image.Image, config: PreprocessingConfig, data: tuple[Region, Coordinate]
+):
     territory = data[0]
     coordinate = data[1]
-    return process_territory(image, territory, coordinate)
+    return process_territory(image, territory, coordinate, config)
 
 
 def mapper_game_step(image: Image.Image):
@@ -27,20 +33,20 @@ def mapper_game_step(image: Image.Image):
     return game_step, game_step.troops_to_alloc
 
 
-def get_data_from_path(image_filepath: Path):
+def get_data_from_path(image_filepath: Path, config: PreprocessingConfig):
     # print(path)
     image = Image.open(image_filepath)
     image = image.resize(original_res)
-    return get_data_from_image(image)
+    return get_data_from_image(image, config)
 
 
-def get_data_from_image(image: Image.Image):
+def get_data_from_image(image: Image.Image, config: PreprocessingConfig):
     cpu_counts = cpu_count()
     cpu_counts = cpu_counts if cpu_counts else 0
     coordinates = get_coordinates()
     with Pool(min(max(cpu_counts - 1, 1), 14), maxtasksperchild=2) as pool:
         map_state = pool.map(
-            partial(mapper_process_territory, image),
+            partial(mapper_process_territory, image, config),
             coordinates,
         )
         border_matrix = pool.apply(gen_border_matrix)
@@ -56,7 +62,8 @@ def get_data():
     list_of_files = glob.glob(pattern)
     latest_file = max(list_of_files, key=os.path.getctime)
     path = Path(latest_file)
-    return get_data_from_path(path)
+    config = PreprocessingConfig()
+    return get_data_from_path(path, config)
 
 
 if __name__ == "__main__":
