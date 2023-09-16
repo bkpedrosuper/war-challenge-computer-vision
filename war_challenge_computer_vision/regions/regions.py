@@ -6,19 +6,20 @@ import numpy as np
 class ContinentData:
     idx = 0
 
-    def __init__(self, qtd_troops: int):
+    def __init__(self, qtd_troops: int, qtd_regions: int):
         self.qtd_troops = qtd_troops
         self.idx = ContinentData.idx
+        self.qtd_regions = qtd_regions
         ContinentData.idx += 1
 
 
 class Continent(Enum):
-    AFRICA = ContinentData(3)
-    ASIA = ContinentData(7)
-    EU = ContinentData(5)
-    NA = ContinentData(5)
-    OCEANIA = ContinentData(2)
-    SA = ContinentData(2)
+    AFRICA = ContinentData(3,6)
+    ASIA = ContinentData(7,12)
+    EU = ContinentData(5,7)
+    NA = ContinentData(5,9)
+    OCEANIA = ContinentData(2,4)
+    SA = ContinentData(2,4)
 
     @property
     def idx(self):
