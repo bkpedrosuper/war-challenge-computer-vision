@@ -62,7 +62,7 @@ def get_data():
     list_of_files = glob.glob(pattern)
     latest_file = max(list_of_files, key=os.path.getctime)
     path = Path(latest_file)
-    config = PreprocessingConfig()
+    config = PreprocessingConfig(threshold_yellow=190, gpu=True)
     return get_data_from_path(path, config)
 
 

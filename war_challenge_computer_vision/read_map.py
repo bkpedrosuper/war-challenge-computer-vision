@@ -129,8 +129,8 @@ def get_game_step(image: ImagePIL) -> GameStep:
 class PreprocessingConfig:
     image_resize: tuple[int, int] = (1500, 1500)
     image_resize_yellow: tuple[int, int] = (2000, 2000)
-    threshold: int = 140
-    threshold_yellow: int = 210
+    threshold: int = 185
+    threshold_yellow: int = 185
     median_filter_footprint_size: int = 5
     blur_filter_footprint_size: int = 5
     dilate_times: int = 10
@@ -140,6 +140,7 @@ class PreprocessingConfig:
     default_troops_count: int = 1
 
     gpu: bool = False
+    use_easyocr: bool = False
 
 
 class SingletonMeta(type):
@@ -162,7 +163,7 @@ class SingletonMeta(type):
         return cls._instances[cls]
 
 
-class EasyOCRSingleton(metaclass=SingletonMeta):
+class EasyOCRSingleton:
     _reader: easyocr.Reader | None = None
 
     def reader(self, gpu=False):
@@ -271,7 +272,7 @@ def process_territory(
             .build()
         )
 
-    if counter >= max_counter - 1:
+    if counter >= max_counter - 1 and config.use_easyocr:
         easy_ocr_singleton = EasyOCRSingleton()
         reader = easy_ocr_singleton.reader(config.gpu)
         result = reader.readtext(

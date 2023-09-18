@@ -17,8 +17,8 @@ scikit-image = "^0.21.0"
 python-dotenv = {extras = ["cli"], version = "^1.0.0"}
 unidecode = "^1.3.6"
 easyocr = {git = "https://github.com/JaidedAI/EasyOCR.git"}
-torch = {version = "^2.2.0.dev20230915+cu121", allow-prereleases = true, source = "pytorch-gpu-cuda-12"}
-torchvision = {version = "^0.17.0.dev20230915+cu121", allow-prereleases = true, source = "pytorch-gpu-cuda-12"}
+torch = {version = "^2.0.1+rocm5.4.2", source = "pytorch-gpu-amd"}
+torchvision = {version = "^0.15.2+rocm5.4.2", source = "pytorch-gpu-amd"}
 
 
 [tool.poetry.group.dev.dependencies]

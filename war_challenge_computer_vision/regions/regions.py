@@ -33,10 +33,11 @@ class Continent(Enum):
 class RegionData:
     idx = 0
 
-    def __init__(self, continent: Continent):
+    def __init__(self, continent: Continent,importance:float):
         self.continent = continent
         self.idx = RegionData.idx
         self.borders: list[Region] = []
+        self.importance = importance
         RegionData.idx += 1
 
     def set_borders(self, borders: list["Region"]):
@@ -44,53 +45,53 @@ class RegionData:
 
 
 class Region(Enum):
-    Brazil = RegionData(Continent.SA)
-    Argentina_Uruguay = RegionData(Continent.SA)
-    Colombia_Venezuela = RegionData(Continent.SA)
-    Peru_Bolivia_Chile = RegionData(Continent.SA)
+    Brazil = RegionData(Continent.SA,0.3)
+    Argentina_Uruguay = RegionData(Continent.SA,0.1)
+    Colombia_Venezuela = RegionData(Continent.SA,0.3)
+    Peru_Bolivia_Chile = RegionData(Continent.SA,0.2)
 
-    Mexico = RegionData(Continent.NA)
-    California = RegionData(Continent.NA)
-    New_York = RegionData(Continent.NA)
-    Labrador = RegionData(Continent.NA)
-    Ottawa = RegionData(Continent.NA)
-    Vancouver = RegionData(Continent.NA)
-    Mackenzie = RegionData(Continent.NA)
-    Alaska = RegionData(Continent.NA)
-    Greenland = RegionData(Continent.NA)
+    Mexico = RegionData(Continent.NA,0.3)
+    California = RegionData(Continent.NA,0.2)
+    New_York = RegionData(Continent.NA,0.2)
+    Labrador = RegionData(Continent.NA,0.2)
+    Ottawa = RegionData(Continent.NA,0.1)
+    Vancouver = RegionData(Continent.NA,0.2)
+    Mackenzie = RegionData(Continent.NA,0.2)
+    Alaska = RegionData(Continent.NA,0.4)
+    Greenland = RegionData(Continent.NA,0.3)
 
-    Iceland = RegionData(Continent.EU)
-    England = RegionData(Continent.EU)
-    Sweden = RegionData(Continent.EU)
-    Germany = RegionData(Continent.EU)
-    Spain_Portugal_France_Italy = RegionData(Continent.EU)
-    Poland_Yugoslavia = RegionData(Continent.EU)
-    Moscow = RegionData(Continent.EU)
+    Iceland = RegionData(Continent.EU,0.3)
+    England = RegionData(Continent.EU,0.2)
+    Sweden = RegionData(Continent.EU,0.2)
+    Germany = RegionData(Continent.EU,0.2)
+    Spain_Portugal_France_Italy = RegionData(Continent.EU,0.3)
+    Poland_Yugoslavia = RegionData(Continent.EU,0.3)
+    Moscow = RegionData(Continent.EU,0.3)
 
-    Algeria_Nigeria = RegionData(Continent.AFRICA)
-    Egypt = RegionData(Continent.AFRICA)
-    Congo = RegionData(Continent.AFRICA)
-    Sudan = RegionData(Continent.AFRICA)
-    Madagascar = RegionData(Continent.AFRICA)
-    South_Africa = RegionData(Continent.AFRICA)
+    Algeria_Nigeria = RegionData(Continent.AFRICA,0.3)
+    Egypt = RegionData(Continent.AFRICA,0.3)
+    Congo = RegionData(Continent.AFRICA,0.2)
+    Sudan = RegionData(Continent.AFRICA,0.2)
+    Madagascar = RegionData(Continent.AFRICA,0.1)
+    South_Africa = RegionData(Continent.AFRICA,0.1)
 
-    Middle_East = RegionData(Continent.ASIA)
-    Aral = RegionData(Continent.ASIA)
-    Omsk = RegionData(Continent.ASIA)
-    Dudinka = RegionData(Continent.ASIA)
-    Siberia = RegionData(Continent.ASIA)
-    Tchita = RegionData(Continent.ASIA)
-    Mongolia = RegionData(Continent.ASIA)
-    Vladivostok = RegionData(Continent.ASIA)
-    China = RegionData(Continent.ASIA)
-    India = RegionData(Continent.ASIA)
-    Japan = RegionData(Continent.ASIA)
-    Vietnam = RegionData(Continent.ASIA)
+    Middle_East = RegionData(Continent.ASIA,0.3)
+    Aral = RegionData(Continent.ASIA,0.3)
+    Omsk = RegionData(Continent.ASIA,0.3)
+    Dudinka = RegionData(Continent.ASIA,0.2)
+    Siberia = RegionData(Continent.ASIA,0.2)
+    Tchita = RegionData(Continent.ASIA,0.2)
+    Mongolia = RegionData(Continent.ASIA,0.1)
+    Vladivostok = RegionData(Continent.ASIA,0.4)
+    China = RegionData(Continent.ASIA,0.32)
+    India = RegionData(Continent.ASIA,0.3)
+    Japan = RegionData(Continent.ASIA,0.2)
+    Vietnam = RegionData(Continent.ASIA,0.31)
 
-    Borneo = RegionData(Continent.OCEANIA)
-    Sumatra = RegionData(Continent.OCEANIA)
-    New_Guinea = RegionData(Continent.OCEANIA)
-    Australia = RegionData(Continent.OCEANIA)
+    Borneo = RegionData(Continent.OCEANIA,0.3)
+    Sumatra = RegionData(Continent.OCEANIA,0.3)
+    New_Guinea = RegionData(Continent.OCEANIA,0.2)
+    Australia = RegionData(Continent.OCEANIA,0.2)
 
     def set_borders(self, borders: list["Region"]):
         self.value.set_borders(borders)
